@@ -1,28 +1,30 @@
+/**
+ * @description       : 
+ * @author            : HAVARD Julien
+ * @group             : 
+ * @last modified on  : 03-25-2024
+ * @last modified by  : HAVARD Julien
+**/
 global class UpdateAccounts implements Database.Batchable<sObject>{
-    
-   global Database.QueryLocator start(Database.BatchableContext info){ 
-       //Requeter seulement les comptes qui ont au moins une commande avec le Status 'Ordered'
-       return Database.getQueryLocator('SELECT Id FROM Account');
+    private fflib_ISObjectUnitOfWork unitOfWork;
 
-   }
+    global Database.QueryLocator start(Database.BatchableContext info){
+        return Database.getQueryLocator('SELECT Id, Name, Chiffre_d_affaire__c, (SELECT Id, TotalAmount FROM Orders WHERE TotalAmount != 0) FROM Account WHERE Id IN (SELECT AccountId FROM Order WHERE Status = \'Ordered\')');
+    }
     
-   global void execute(Database.BatchableContext info, List<Account> scope){      
-       list<Order> listOrders =  [SELECT Id, TotalAmount, AccountId FROM Order];
-       
-		for(integer i=0; i < scope.size(); i++){
-			Account myAccount = scope[i];
-			myAccount.Chiffre_d_affaire__c = 0;
-           for(integer j=0; j < listOrders.size(); j++){
-               if(listOrders[j].AccountId == myAccount.Id){
-                   myAccount.Chiffre_d_affaire__c = myAccount.Chiffre_d_affaire__c + listOrders[j].TotalAmount;
-               }                   
-           }
-       }
-       
-       update scope;
-   }    
+    global void execute(Database.BatchableContext info, List<Account> scope){  
+        fflib_ISObjectUnitOfWork unitOfWork = Application.UOW.newInstance();
+
+        for (Account acc : scope){
+            acc.Chiffre_d_affaire__c = 0;
+            for (Order order : acc.Orders){
+                acc.Chiffre_d_affaire__c += order.TotalAmount;
+            }
+            unitOfWork.registerDirty(acc);
+        }
+        unitOfWork.commitWork();
+    }    
     
-   global void finish(Database.BatchableContext info){     
-       
-   } 
+    global void finish(Database.BatchableContext info){    
+    } 
 }
