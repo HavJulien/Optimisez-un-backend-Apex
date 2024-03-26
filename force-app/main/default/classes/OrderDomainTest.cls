@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : HAVARD Julien
  * @group             : 
- * @last modified on  : 03-25-2024
+ * @last modified on  : 03-26-2024
  * @last modified by  : HAVARD Julien
 **/
 @isTest
@@ -10,7 +10,7 @@ public with sharing class OrderDomainTest {
     @IsTest
     static void testOnBeforeUpdate(){
         Account acc = TestDataFactory.generateAccount(true);
-        List<Order> orderList = TestDataFactory.generateOrders(3, acc, true);
+        List<Order> orderList = TestDataFactory.generateOrders(250, acc, true);
         for (Order orderLoop : orderList){
             orderLoop.ShipmentCost__c = 100;
         }

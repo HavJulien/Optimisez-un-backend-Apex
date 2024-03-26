@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : HAVARD Julien
  * @group             : 
- * @last modified on  : 03-25-2024
+ * @last modified on  : 03-26-2024
  * @last modified by  : HAVARD Julien
 **/
 @IsTest
@@ -27,7 +27,7 @@ public with sharing class OrderServiceTest {
     static void testUpdateOrdersNetAmount(){
         fflib_ApexMocks mocks = new fflib_ApexMocks();
         OrderService service = new OrderService();
-        List<Order> orderList = TestDataFactory.generateOrders(2, false);
+        List<Order> orderList = TestDataFactory.generateOrders(200, false);
 
         Test.startTest();
         service.updateOrdersNetAmount(orderList);
@@ -60,7 +60,7 @@ public with sharing class OrderServiceTest {
         OrderService service = new OrderService();
         AccountSelector accSelector = new AccountSelector();
 
-        Integer orderSize = 2;
+        Integer orderSize = 250;
         Decimal amount = 1000;
         Account acc = TestDataFactory.generateAccount(true);
 
